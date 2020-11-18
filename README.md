@@ -4,7 +4,7 @@ A Web Application for securely managing a To Do List
 
 [Click here to see phase 1 document](docs/phase1.md)
 
-Deployed site: 
+Deployed site: <https://pengchen11.github.io/react-todo/>
 
 ## Business Requirements
 
