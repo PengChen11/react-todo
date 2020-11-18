@@ -2,9 +2,10 @@ import {React, useState, useEffect} from 'react';
 import TodoForm from './components/todo/form';
 import TodoList from './components/todo/list';
 import Header from './components/header';
-import {Card} from 'react-bootstrap';
+import {Container, Row, Col} from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './todo.scss';
+import { v4 as uuidv4 } from 'uuid';
 
 export default function App (){
   let [list, setList] = useState([]);
@@ -27,34 +28,39 @@ export default function App (){
 
   useEffect(()=>{
     let initList = [
-      { _id: 1, complete: false, text: 'Clean the Kitchen', difficulty: 3, assignee: 'Person A'},
-      { _id: 2, complete: false, text: 'Do the Laundry', difficulty: 2, assignee: 'Person A'},
-      { _id: 3, complete: false, text: 'Walk the Dog', difficulty: 4, assignee: 'Person B'},
-      { _id: 4, complete: true, text: 'Do Homework', difficulty: 3, assignee: 'Person C'},
-      { _id: 5, complete: false, text: 'Take a Nap', difficulty: 1, assignee: 'Person B'},
+      { _id: uuidv4(), complete: true, text: 'Finish Form component', difficulty: 3, assignee: 'Peng Chen'},
+      { _id: uuidv4(), complete: true, text: 'Debug List component', difficulty: 2, assignee: 'Peng Chen'},
+      { _id: uuidv4(), complete: true, text: 'Finish bootstrap for app', difficulty: 4, assignee: 'Peng Chen'},
+      { _id: uuidv4(), complete: false, text: 'Setup Xbox series X', difficulty: 1, assignee: 'Peng Chen'},
+      { _id: uuidv4(), complete: false, text: 'Follow up with Nintendo Switch develivery', difficulty: 1, assignee: 'Peng Chen'},
     ];
     setList(initList);
+
   },[]);
+
+  useEffect(()=>{
+    document.title = `To Do List: ${list.filter(item => !item.complete).length}`;
+  });
 
   return (
     <>
       <Header/>
-      <main className='container'>
+      <Container className = 'p-3'>
         <h2 className = 'text-white bg-dark mt-3 p-3'>
         To Do List Manager ({list.filter(item => !item.complete).length})
         </h2>
-        <section className="todo">
-          <div>
+        <Row className='font-weight-bold'>
+          <Col lg={4} md={6} sm={12} className = 'p-3'>
             <TodoForm handleSubmit={addItem} />
-          </div>
-          <div>
+          </Col>
+          <Col lg={8} md={6} sm={12} className = 'p-3'>
             <TodoList
               list={list}
               handleComplete={toggleComplete}
             />
-          </div>
-        </section>
-      </main>
+          </Col>
+        </Row>
+      </Container>
     </>
   );
 }

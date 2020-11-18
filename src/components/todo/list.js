@@ -1,20 +1,21 @@
 import {React} from 'react';
 import PropTypes from 'prop-types';
+import {ListGroup} from 'react-bootstrap';
 
 export default function TodoList (props){
   return (
-    <ul>
+    <ListGroup className='text-white'>
       {props.list.map(item => (
-        <li
-          className={`complete-${item.complete.toString()}`}
+        <ListGroup.Item
+          className={`${item.complete? 'bg-success':'bg-danger'}`}
           key={item._id}
         >
           <span onClick={() => props.handleComplete(item._id)}>
-            {item.text}
+            {item.text} -- Assignee: {item.assignee}
           </span>
-        </li>
+        </ListGroup.Item>
       ))}
-    </ul>
+    </ListGroup>
   );
 }
 
