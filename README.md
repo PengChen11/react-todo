@@ -1,70 +1,130 @@
-# Getting Started with Create React App
+# To Do List Manager
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A Web Application for securely managing a To Do List
 
-## Available Scripts
+[Click here to see phase 1 document](docs/phase1.md)
 
-In the project directory, you can run:
+## Business Requirements
 
-### `npm start`
+The To Do Manager application has the following overall requirements:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- Designed to match the mock-up
+  - Header, Main Section Footer
+  - Use React [Bootstrap](https://react-bootstrap.github.io/) for styling and visual components
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+- The header should present the application title and main menu
+  - Home Link, which shows the list of To Do Items as noted below
+  - A Login/Register/User section
+    - When a user is **not logged in**:
+      - Show Login and Register links
+        - Login: Renders a Login Form
+        - Register: Renders a new user registration form
+          - Require Fields:: Username, Password, Email, Role
 
-### `npm test`
+    - When a user **is logged in**:
+      - Show “Welcome username”
+      - Show a “Logout” link
+        - When clicked, this should remove any cookies you have set and remove access
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- In the “Main” section
+  - Nothing should be visible until a user has logged in successfully
+  - **The list of items in the to do list**
+    - Based on user preferences, show listings in groups of (5, 10, etc) and provide the ability to view multiple “pages” of results
+    - Each item in list should show the text of the item as well as the assignee
+      - Based on user preferences, hide or show completed items
+      - If shown, completed items should be styled differently making their status visually obvious
 
-### `npm run build`
+    - For users with “Update” permissions
+      - When an item is clicked, toggle the “complete” status of the item.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+    - For users with “Delete” permissions
+      - Items should have a delete button associated with them
+        - When clicked, remove the item from the list
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+    - For users with “Create” permissions …
+      - **A Form where the user can a new item to the todo list**
+        - Items should have the following fields:
+          - To Do Item Text
+          - Assigned To
+          - Status (complete/incomplete)
+          - Difficulty (number between 1 and 5)
+          - i.e.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+            ```javascript
+            const todo = mongoose.Schema({
+              text: { type: String, required: true },
+              assignee: { type: String },
+              complete: { type: Boolean, default:false },
+              difficulty: { type: Number, default: 1 },
+            });
+            ```
 
-### `npm run eject`
+## Example
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+![gif](https://code-401-javascript-guide.s3-us-west-2.amazonaws.com/assets/todo.gif)
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Technical Requirements
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+The application will be created with the following overall architecture and methodologies
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+1. React
+2. ES6 Classes
+3. Settings delivered to the application using Context
+4. User Login & Permissions delivered to the application using Context
+5. Local Storage / Cookies for storing login status
+6. Local Storage / Cookies for storing user preferences
+7. Superagent or Axios for performing API Requests
+8. React Bootstrap for styling
+9. Test Driven Development, using Jest
+     - Tests will be runnable locally
+10. Deployment to cloud provider
 
-## Learn More
+### Application Structure (proposed)
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```json
+├── .gitignore
+├── .eslintrc.json
+├── __tests__
+│   ├── todo.test.js
+│   ├── auth.test.js
+├── src
+│   ├── index.js
+│   ├── app.js
+│   ├── context
+│   │   ├── auth
+│   │   │   └── context.js
+│   │   │   └── auth.js
+│   │   │   └── login.js
+│   │   ├── settings
+│   │   │   └── context.js
+│   ├── components
+│   │   ├── if
+│   │   │   └── if.js
+│   │   ├── todo
+│   │   │   └── form.js
+│   │   │   └── list.js
+│   │   ├── footer
+│   │   │   └── footer.js
+│   │   ├── header
+│   │   │   └── header.js
+└── package.json
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Development Process, Milestones
 
-### Code Splitting
+At every stage of development, the application should be publicly deployed
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+1. Phase 1: Application Setup
+    - Basic To Do List Management, using Hooks
 
-### Analyzing the Bundle Size
+2. Phase 2: Persistence
+    - Implement a custom Form Hook
+    - Implement a custom Ajax Hook
+    - Connect to a live API for storing To Do Items
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+3. Phase 3: Settings and Global Context
+    - Implement user settings for displaying items
 
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+4. Phase 4: Authorization
+    - Require a login to access the list
+    - Restrict access to adding, editing, deleting to certain user types
