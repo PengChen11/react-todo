@@ -1,25 +1,11 @@
-import React, {useState} from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import {Form, Button, Card} from 'react-bootstrap';
+import useForm from '../../hooks/useForm';
 
 export default function TodoForm (props){
 
-  var [item, setItem] = useState({});
-
-  function handleInputChange (e){
-    let itemUpdate = {
-      ...item,
-      [e.target.name]: e.target.value,
-    };
-    setItem(itemUpdate);
-  }
-
-  function handleSubmit (e) {
-    e.preventDefault();
-    e.target.reset();
-    props.handleSubmit(item);
-    setItem({});
-  }
+  const [handleSubmit, handleChange] = useForm(props.handleSubmit);
 
   return (
     <>
@@ -31,10 +17,10 @@ export default function TodoForm (props){
             <Form.Group controlId="item">
               <Form.Label>To Do Item</Form.Label>
               <Form.Control 
-                name="text"
+                name="item"
                 type="text"
                 placeholder="Item Details"
-                onChange={handleInputChange}
+                onChange={handleChange}
               />
             </Form.Group>
 
@@ -44,7 +30,7 @@ export default function TodoForm (props){
                 name="assignee"
                 type="text"
                 placeholder="Assignee Name"
-                onChange={handleInputChange}
+                onChange={handleChange}
               />
             </Form.Group>
             
@@ -55,9 +41,9 @@ export default function TodoForm (props){
                 type="range"
                 min="1"
                 max="5"
-                name="text"
+                name="difficulty"
                 placeholder="Assignee Name"
-                onChange={handleInputChange}
+                onChange={handleChange}
               />
             </Form.Group>
 

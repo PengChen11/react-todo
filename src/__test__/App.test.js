@@ -22,9 +22,3 @@ test('renders form to add new item', () => {
 
 });
 
-test('renders to do Lists ', () => {
-  render(<App />);
-  const listItemEl = screen.getByText(/Finish Form component/i);
-  expect(listItemEl).toBeInTheDocument(); 
-  
-});
