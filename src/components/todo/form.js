@@ -17,6 +17,7 @@ export default function TodoForm (props){
             <Form.Group controlId="item">
               <Form.Label>To Do Item</Form.Label>
               <Form.Control 
+                required
                 name="item"
                 type="text"
                 placeholder="Item Details"
@@ -27,6 +28,7 @@ export default function TodoForm (props){
             <Form.Group controlId="assignee">
               <Form.Label>Assigned To</Form.Label>
               <Form.Control 
+                required
                 name="assignee"
                 type="text"
                 placeholder="Assignee Name"
@@ -37,13 +39,14 @@ export default function TodoForm (props){
             <Form.Group controlId="difficulty">
               <Form.Label>Difficulty Rating</Form.Label>
               <Form.Control 
+                required
                 defaultValue="1"
                 type="range"
                 min="1"
                 max="5"
                 name="difficulty"
                 placeholder="Assignee Name"
-                onChange={handleChange}
+                onClick={handleChange}
               />
             </Form.Group>
 

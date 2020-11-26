@@ -13,14 +13,13 @@ export default function useForm(callback){
   function handleChange (e){
     e.persist();
 
-    if (e.target.name === 'maxNum') {
+    if (e.target.name === 'maxNum' || e.target.name === 'difficulty') {
       setValues({...values,[e.target.name]: Number(e.target.value)});
       return;
     }
 
     if (e.target.name === 'showCompleted') {
-      console.log('I am checked');
-      console.log(e.target.value);
+
       setValues({...values,[e.target.name]: e.target.value==='yes'? true:false});
       return;
     }
