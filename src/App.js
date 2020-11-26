@@ -21,6 +21,7 @@ export default function App (){
   const settingsContext = useContext(SettingsContext);
 
   async function addItem (item) {
+    console.log('item in app: ', item);
     const config = {
       method: 'post',
       url,
@@ -88,6 +89,7 @@ export default function App (){
       };
       try{
         const {data} = await axios(config);
+        console.log('current show status: ',settingsContext.settings.showCompleted );
         if (settingsContext.settings.showCompleted===false){
           let listData = data.filter(item => item.complete===false);
           setList(listData);
@@ -111,6 +113,8 @@ export default function App (){
   function toggleSettings(){
     setShowSettings(!showSettings);
   }
+
+  console.log('I am running');
 
   return (
     <>

@@ -15,13 +15,13 @@ function SettingsModel (props){
 
   function changeSettings (newSettingsData){
 
-    const userSettings = {
-      showCompleted: newSettingsData.showCompleted || appliedSettings.showCompleted,
-      maxNum: newSettingsData.maxNum || appliedSettings.maxNum,
-      sort: newSettingsData.sort || appliedSettings.sort,
-    };
+    // const userSettings = {
+    //   showCompleted: newSettingsData.showCompleted || appliedSettings.showCompleted,
+    //   maxNum: newSettingsData.maxNum || appliedSettings.maxNum,
+    //   sort: newSettingsData.sort || appliedSettings.sort,
+    // };
 
-    settingsContext.setSettings(userSettings);
+    settingsContext.setSettings(newSettingsData);
 
     props.handleClose();
   }
@@ -38,10 +38,13 @@ function SettingsModel (props){
           <Form.Group controlId='showCompleted'>
             <Form.Label className='mr-3'>Show completed items?</Form.Label>
             <Form.Control
+              required
               name='showCompleted'
               as='select'
               onChange = {handleChange}
             >
+              
+              <option value="">...</option>
               <option value="no">No</option>
               <option value="yes">Yes</option>
             </Form.Control>
@@ -50,11 +53,13 @@ function SettingsModel (props){
           <Form.Group controlId='maxNum'>
             <Form.Label>How many items do you want to display per page?</Form.Label>
             <Form.Control
+              required
               as="select"
               name='maxNum'
               type='text'
               onChange = {handleChange}
             >
+              <option value="">...</option>
               <option value="5">5 items</option>
               <option value="6">6 items</option>
               <option value="7">7 items</option>
@@ -67,11 +72,13 @@ function SettingsModel (props){
           <Form.Group controlId='sort'>
             <Form.Label>How do you want to sort your to do items?</Form.Label>
             <Form.Control
+              required
               as="select"
               name='sort'
               type='text'
               onChange = {handleChange}
             >
+              <option value="">...</option>
               <option value="difficulty">By difficulty ratings</option>
               <option value="item">By item info</option>
               <option value="assignee">By assignee name</option>

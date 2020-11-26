@@ -5,7 +5,7 @@ export const SettingsContext = React.createContext();
 
 function Settings(props){
   const initSettings = {
-    showCompleted: false,
+    showCompleted: 'no',
     maxNum: 5,
     sort: 'difficulty',
   };
