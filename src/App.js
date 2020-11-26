@@ -1,12 +1,14 @@
-import {React, useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import TodoForm from './components/todo/form';
 import TodoList from './components/todo/list';
 import Header from './components/header';
-import {Container, Row, Col} from 'react-bootstrap';
+import {Container, Row, Col, Button} from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import url from './url.js';
 // import useAjax from './hooks/useAjax';
 import axios from 'axios';
+import {SettingsContext} from './context/settings.js';
+import SettingsModal from './components/todo/settingsModal.js';
 
 export default function App (){
 
@@ -14,6 +16,9 @@ export default function App (){
   const [refresh, triggerRefresh] = useState(false);
   const [list, setList] = useState([]);
   const [error, setError] = useState(null);
+  const [showSettings, setShowSettings] = useState(false);
+
+  const settingsContext = useContext(SettingsContext);
 
   async function addItem (item) {
     const config = {
@@ -24,6 +29,9 @@ export default function App (){
         complete:false,
       },
     };
+    if (!config.data.difficulty) {
+      config.data.difficulty=1;
+    }
     try {
       await axios(config);
       triggerRefresh(!refresh);
@@ -80,6 +88,12 @@ export default function App (){
       };
       try{
         const {data} = await axios(config);
+        if (settingsContext.settings.showCompleted===false){
+          let listData = data.filter(item => item.complete===false);
+          setList(listData);
+          
+          return;
+        }
         setList(data);
         setError(null);
       }
@@ -88,13 +102,15 @@ export default function App (){
       }
     };
     getToDoList();
-  }, [refresh]);
-  
-  console.log('list', list);
+  }, [refresh, settingsContext.settings]);
   
   useEffect(()=>{
     document.title = `To Do List: ${list.filter(item => !item.complete).length}`;
   });
+
+  function toggleSettings(){
+    setShowSettings(!showSettings);
+  }
 
   return (
     <>
@@ -102,7 +118,9 @@ export default function App (){
       <Container className = 'p-3'>
         <h2 className = 'text-white bg-dark mt-3 p-3'>
         To Do List Manager ({list.filter(item => !item.complete).length})
+          <Button className='float-right' variant="primary" onClick={toggleSettings}>Settings</Button>
         </h2>
+        <SettingsModal show={showSettings} handleClose={toggleSettings} ></SettingsModal>
         <Row className='font-weight-bold'>
           <Col lg={4} md={6} sm={12} className = 'p-3'>
             <TodoForm handleSubmit={addItem} />
