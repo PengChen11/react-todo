@@ -10,18 +10,16 @@ export default function TodoList (props){
   const [pages, setPages] = useState({page1:[]});
   const [currentPage, setCurrentPage] = useState({pageNum:1,list:[] });
 
+  // apply all settings whenever given list got changed, or settings are changed.
   useEffect(()=>{
     applySettings(props.list);
   },[props.list, settingsContext]);
 
+  //initialize the pages to show page1 as current page, whenever the whole pages sys get changed.
   useEffect(()=>{
-    console.log(pages);
     setCurrentPage({ pageNum: 1, list: pages.page1});
   },[pages]);
 
-  useEffect(()=>{
-    console.log(currentPage);
-  },[currentPage]);
 
   /**
    * 
@@ -45,27 +43,25 @@ export default function TodoList (props){
     };
   }
 
-
+  /**
+   * 
+   * @param {array} listArr apply all settings to the given list array
+   */
   function applySettings(listArr){
-    console.log('I am called');
     let displayList=[];
     const {showCompleted, maxNum, sort, sortOrder} = settingsContext.settings;
 
-    //check the setting whether to show the completed items.
+    //apply the show completed item ssetting.
     if (showCompleted===false){
       displayList = listArr.filter(item => item.complete===false);
     } else displayList = listArr;
 
-    console.log('I am the max num',maxNum );
-    console.log('displayList Length:', displayList.length);
-
-    //apply the sort of the list
+    //apply the sort and sort order setting
     displayList.sort(sortList(sort, sortOrder));
 
-    //check the number of items to show per page.
+    //apply how many items per page settings and create the pages sys
     if (maxNum < displayList.length) {
       let totalNumOfPages = Math.ceil(displayList.length / maxNum);
-      console.log('totoal pages: ', totalNumOfPages);
       let buildingPages = {};
 
       for (let i = 0; i<totalNumOfPages; i++){

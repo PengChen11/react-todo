@@ -10,7 +10,6 @@ export default function TodoForm (props){
 
   useEffect(()=>{
     if (values.item && values.assignee){
-      console.log('this is called');
       setSubmitBtnStatus({disabled: false});
     } else {
       setSubmitBtnStatus({disabled: true});

@@ -22,7 +22,7 @@ function Settings(props){
 
 import PropTypes from 'prop-types';
 Settings.propTypes = {
-  children: PropTypes.array,
+  children: PropTypes.object,
 };
 
 export default Settings;
