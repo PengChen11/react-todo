@@ -21,9 +21,11 @@ function SettingsModel (props){
   return (
 
     <Modal show={props.show} onHide={props.handleClose} onSubmit={handleSubmit}>
+
       <Modal.Header closeButton>
         <Modal.Title>Settings</Modal.Title>
       </Modal.Header>
+
       <Modal.Body>
         <Form className = 'font-weight-bold'>
 
@@ -35,7 +37,6 @@ function SettingsModel (props){
               as='select'
               onChange = {handleChange}
             >
-              
               <option value="">...</option>
               <option value="no">No</option>
               <option value="yes">Yes</option>
