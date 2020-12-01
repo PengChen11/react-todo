@@ -1,4 +1,4 @@
-import React, {useState, useContext, useEffect} from 'react';
+import React, {useState, useContext, useEffect, useCallback} from 'react';
 import PropTypes from 'prop-types';
 import {Alert, Toast, Pagination} from 'react-bootstrap';
 import {If, Then, Else} from 'react-if';
@@ -10,10 +10,43 @@ export default function TodoList (props){
   const [pages, setPages] = useState({page1:[]});
   const [currentPage, setCurrentPage] = useState({pageNum:1,list:[] });
 
+  /**
+   * 
+   * @param {array} listArr apply all settings to the given list array
+   */
+  const applySettings = useCallback ((listArr)=>{
+    let displayList=[];
+    const {showCompleted, maxNum, sort, sortOrder} = settingsContext.settings;
+
+    //apply the show completed item ssetting.
+    if (showCompleted===false){
+      displayList = listArr.filter(item => item.complete===false);
+    } else displayList = listArr;
+
+    //apply the sort and sort order setting
+    displayList.sort(sortList(sort, sortOrder));
+
+    //apply how many items per page settings and create the pages sys
+    if (maxNum < displayList.length) {
+      let totalNumOfPages = Math.ceil(displayList.length / maxNum);
+      let buildingPages = {};
+
+      for (let i = 0; i<totalNumOfPages; i++){
+        let listsForEachPage = displayList.slice(i*maxNum,i*maxNum+maxNum);
+        buildingPages[`page${i+1}`]=listsForEachPage;
+      }
+      setPages(buildingPages);
+
+    } else {
+      setPages({page1: displayList});
+    }
+
+  },[settingsContext]);
+
   // apply all settings whenever given list got changed, or settings are changed.
   useEffect(()=>{
     applySettings(props.list);
-  },[props.list, settingsContext]);
+  },[props.list, applySettings]);
 
   //initialize the pages to show page1 as current page, whenever the whole pages sys get changed.
   useEffect(()=>{
@@ -43,39 +76,7 @@ export default function TodoList (props){
     };
   }
 
-  /**
-   * 
-   * @param {array} listArr apply all settings to the given list array
-   */
-  function applySettings(listArr){
-    let displayList=[];
-    const {showCompleted, maxNum, sort, sortOrder} = settingsContext.settings;
-
-    //apply the show completed item ssetting.
-    if (showCompleted===false){
-      displayList = listArr.filter(item => item.complete===false);
-    } else displayList = listArr;
-
-    //apply the sort and sort order setting
-    displayList.sort(sortList(sort, sortOrder));
-
-    //apply how many items per page settings and create the pages sys
-    if (maxNum < displayList.length) {
-      let totalNumOfPages = Math.ceil(displayList.length / maxNum);
-      let buildingPages = {};
-
-      for (let i = 0; i<totalNumOfPages; i++){
-        let listsForEachPage = displayList.slice(i*maxNum,i*maxNum+maxNum);
-        buildingPages[`page${i+1}`]=listsForEachPage;
-      }
-      setPages(buildingPages);
-
-    } else {
-      setPages({page1: displayList});
-    }
-
-  }
-
+ 
   function changePage(number){
     setCurrentPage({pageNum:number, list:pages[`page${number}`]});
   }
