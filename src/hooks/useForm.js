@@ -1,12 +1,12 @@
 import {useState} from 'react';
 
-export default function useForm(callback){
+export default function useForm(submitCallback, inputCallback=null){
   const [values, setValues] = useState({});
 
   function handleSubmit (e) {
     e.preventDefault();
     e.target.reset();
-    callback && callback(values);
+    submitCallback && submitCallback(values);
     setValues({});
   }
 

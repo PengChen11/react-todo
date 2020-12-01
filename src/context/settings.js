@@ -1,13 +1,13 @@
 import React, {useState} from 'react';
 
 export const SettingsContext = React.createContext();
-//Usage:  import {AppContext} from 'this-file';
 
 function Settings(props){
   const initSettings = {
-    showCompleted: 'no',
+    showCompleted: false,
     maxNum: 5,
     sort: 'difficulty',
+    sortOrder: 'ascending',
   };
 
   const [settings, setSettings] = useState(initSettings);

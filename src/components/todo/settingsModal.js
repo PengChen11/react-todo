@@ -11,15 +11,7 @@ function SettingsModel (props){
 
   const settingsContext = useContext(SettingsContext);
 
-  const appliedSettings = settingsContext.settings;
-
   function changeSettings (newSettingsData){
-
-    // const userSettings = {
-    //   showCompleted: newSettingsData.showCompleted || appliedSettings.showCompleted,
-    //   maxNum: newSettingsData.maxNum || appliedSettings.maxNum,
-    //   sort: newSettingsData.sort || appliedSettings.sort,
-    // };
 
     settingsContext.setSettings(newSettingsData);
 
@@ -82,6 +74,21 @@ function SettingsModel (props){
               <option value="difficulty">By difficulty ratings</option>
               <option value="item">By item info</option>
               <option value="assignee">By assignee name</option>
+            </Form.Control>
+          </Form.Group>
+
+          <Form.Group controlId='sortOrder'>
+            <Form.Label className='mr-3'>Sorting order?</Form.Label>
+            <Form.Control
+              required
+              name='sortOrder'
+              as='select'
+              onChange = {handleChange}
+            >
+              
+              <option value="">...</option>
+              <option value="ascending">Ascending</option>
+              <option value="descending">Descending</option>
             </Form.Control>
           </Form.Group>
 
