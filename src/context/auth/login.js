@@ -2,11 +2,13 @@ import React, {useState, useContext} from 'react';
 import {If, Then, Else} from 'react-if';
 import {Form, Button} from 'react-bootstrap';
 import {LoginContext} from './context.js';
+import LoginModal from '../../components/loginModal.js';
 
 
 export default function Login(){
 
   const [possibleUser, savePossibleUser] = useState({});
+  const [showSignUp, setShowSignUp] = useState(false);
   const loginContext = useContext(LoginContext);
 
   const handleSubmit = (e) =>{
@@ -18,6 +20,10 @@ export default function Login(){
 
   const handleChange = (e) =>{
     savePossibleUser({...possibleUser, [e.target.name]:e.target.value});
+  };
+
+  const toggleSignUp = () =>{
+    setShowSignUp(!showSignUp);
   };
 
 
@@ -54,7 +60,9 @@ export default function Login(){
           </Form.Control>
 
           <Button variant="dark" type="submit" className='m-3'>Sign In</Button>
+          <Button variant="dark"  className='m-3' onClick={toggleSignUp}>Sign up</Button>
         </Form>
+        <LoginModal show={showSignUp} handleClose={toggleSignUp}></LoginModal>
 
       </Else>
     </If>

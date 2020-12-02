@@ -8,14 +8,15 @@ export const LoginContext = React.createContext();
 function LoginProvider(props){
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [authenticatedUser, saveAuthenticatedUser] = useState({});
-  const url = process.env.REACT_APP_API;
+  const signInUrl = process.env.REACT_APP_SIGNIN_URL;
+  const signUpURL = process.env.REACT_APP_SIGNUP_URL;
   
 
   const login = async(userInput) =>{
     //connect to auth server
     const config = {
       method: 'post',
-      url,
+      url: signInUrl,
       auth: {
         username: userInput.username,
         password: userInput.password,
@@ -23,7 +24,6 @@ function LoginProvider(props){
     };
     try {
       const response = await axios(config);
-      console.log('response is: ', response);
       const {token} = response.data;
       validateToken(token);
     }catch(e){
@@ -31,6 +31,26 @@ function LoginProvider(props){
       logout();
       window.alert('login failed. Please try again');
     }
+  };
+
+  const signup = async (userData) =>{
+    
+    const config = {
+      method:'post',
+      url: signUpURL,
+      data: userData,
+    };
+    
+    try {
+      const response = await axios(config);
+      const {token} = response.data;
+      validateToken(token);
+    }catch(e){
+      console.warn('Register Attempt Failed');
+      logout();
+      window.alert('Register process failed. Please try again');
+    }
+
   };
 
   const logout = () =>{
@@ -62,12 +82,10 @@ function LoginProvider(props){
     if (token) validateToken(token);
   },[validateToken]);
 
-  useEffect(()=>{
-    console.log('this is auth user: ', authenticatedUser);
-  },[authenticatedUser]);
+
 
   return(
-    <LoginContext.Provider value={{ isLoggedIn, authenticatedUser, login, logout}}>
+    <LoginContext.Provider value={{ isLoggedIn, authenticatedUser, login, logout, signup}}>
       {props.children}
     </LoginContext.Provider>
   );

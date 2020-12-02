@@ -1,14 +1,14 @@
-import React, {useState, useEffect, useContext} from 'react';
+import React, {useState, useEffect, useContext, useCallback} from 'react';
 import TodoForm from './form';
 import TodoList from './list';
 import {Container, Row, Col, Button} from 'react-bootstrap';
-// import 'bootstrap/dist/css/bootstrap.min.css';
-import url from '../../url.js';
 // import useAjax from './hooks/useAjax';
 import axios from 'axios';
 import SettingsModal from './settingsModal.js';
 import {LoginContext} from '../../context/auth/context.js';
 import Auth from '../../context/auth/auth.js';
+import {If, Then, Else} from 'react-if';
+import ReactLoading from 'react-loading';
 
 export default function Todo (){
 
@@ -17,6 +17,8 @@ export default function Todo (){
   const [error, setError] = useState(null);
   const [showSettings, setShowSettings] = useState(false);
   const {authenticatedUser} = useContext(LoginContext);
+  const [isLoading, setIsLoading] = useState(false);
+  const url = process.env.REACT_APP_TODO_URL;
   /**
    * 
    * @param {obj} item take an obj and save to database
@@ -111,10 +113,15 @@ export default function Todo (){
   }
 
   
-  async function fetchToDoList (){
+  const fetchToDoList = useCallback(async ()=>{
+    let fetchUrl;
+    setIsLoading(true);
+    if (authenticatedUser.role === 'user'){
+      fetchUrl = url+`/assignee/${authenticatedUser.username}`;
+    } else fetchUrl = url;
     const config = {
       method: 'get',
-      url,
+      url: fetchUrl,
       headers: {
         Authorization: `Bearer ${authenticatedUser.token}`,
       },
@@ -123,19 +130,22 @@ export default function Todo (){
       const {data} = await axios(config);
       setList(data);
       setError(null);
+      setIsLoading(false);
     }
     catch (error){
       setError(error.message);
+      setIsLoading(false);
     }
-  }
+  },[authenticatedUser, url]);
 
   // Runs on app load, modifying items, and change settings. Pulls all the list items from data server
   useEffect( () => {
     const getToDoList =  async () => {
+
       await fetchToDoList();
     };
     getToDoList();
-  }, []);
+  }, [fetchToDoList]);
   
 
   // update title
@@ -164,12 +174,19 @@ export default function Todo (){
             </Col>
           </Auth>
           <Col className = 'p-3'>
-            <TodoList
-              list={list}
-              handleComplete={toggleComplete}
-              handleDelete={deleteItem}
-              error={error}
-            />
+            <If condition={isLoading}>
+              <Then>
+                <ReactLoading type={'bars'} color={'grey'} width={150} className='m-auto' />
+              </Then>
+              <Else>
+                <TodoList
+                  list={list}
+                  handleComplete={toggleComplete}
+                  handleDelete={deleteItem}
+                  error={error}
+                />
+              </Else>
+            </If>
           </Col>
         </Row>
       </Container>
