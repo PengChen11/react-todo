@@ -141,11 +141,10 @@ export default function Todo (){
   // Runs on app load, modifying items, and change settings. Pulls all the list items from data server
   useEffect( () => {
     const getToDoList =  async () => {
-
-      await fetchToDoList();
+      if (Object.keys(authenticatedUser).length !== 0 ) await fetchToDoList();
     };
     getToDoList();
-  }, [fetchToDoList]);
+  }, [fetchToDoList, authenticatedUser]);
   
 
   // update title
