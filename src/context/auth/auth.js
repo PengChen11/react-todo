@@ -6,15 +6,18 @@ import {When} from 'react-if';
 
 export default function Auth(props){
 
-  const loginContext = useContext(LoginContext);
+  const {authenticatedUser, isLoggedIn} = useContext(LoginContext);
 
   let okToRender = false;
 
   try {
-    let  authorized= props.capability
-      ? loginContext.authenticatedUser.capabilities.includes(props.capability) : true;
+    if (Object.keys(authenticatedUser).length !== 0 ){
 
-    okToRender = loginContext.isLoggedIn && authorized;
+      let  authorized= props.capability
+        ? authenticatedUser.capabilities.includes(props.capability) : true;
+  
+      okToRender = isLoggedIn && authorized;
+    }
   } catch (e){
     console.warn('Not Authorized');
   }
@@ -30,5 +33,3 @@ Auth.propTypes = {
   children: PropTypes.object,
   capability: PropTypes.string,
 };
-
-//

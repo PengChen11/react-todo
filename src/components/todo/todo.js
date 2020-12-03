@@ -135,6 +135,7 @@ export default function Todo (){
     catch (error){
       setError(error.message);
       setIsLoading(false);
+      console.warn('Error hit when fetching the lists');
     }
   },[authenticatedUser, url]);
 
