@@ -3,12 +3,15 @@ import PropTypes from 'prop-types';
 import {Alert, Toast, Pagination} from 'react-bootstrap';
 import {If, Then, Else} from 'react-if';
 import {SettingsContext} from '../../context/settings.js';
+import {LoginContext} from '../../context/auth/context.js';
+
 
 export default function TodoList (props){
 
   const settingsContext = useContext(SettingsContext);
   const [pages, setPages] = useState({page1:[]});
   const [currentPage, setCurrentPage] = useState({pageNum:1,list:[] });
+  const {authenticatedUser} = useContext(LoginContext);
 
   /**
    * 
@@ -103,34 +106,38 @@ export default function TodoList (props){
 
 
   return (
-    
-    <If condition={props.error}>
-      <Then>
-        <Alert className = 'bg-danger'>
-          <h2>
-            {props.error}
-          </h2>
-        </Alert>
-      </Then>
-      <Else>
-        {currentPage['list'].map(item => (
-          <Toast key={item._id} onClose={() => props.handleDelete(item._id)} style={{width: '100%',maxWidth: '100%'}}>
-            <Toast.Header>
-              <strong className={`${item.complete? 'bg-success':'bg-danger'} rounded mr-2 text-white p-1`} onClick={() => props.handleComplete(item._id)}>
-                {item.complete? 'Completed' : 'Pending'}
-              </strong>
-              <span className="ml-auto mr-auto h6">{item.assignee}</span>
-            </Toast.Header>
-            <Toast.Body>
-              <span className='mr-auto h5'>{item.item}</span>
-              <small className='float-right'>{`Difficulty: ${item.difficulty}`}</small>
-            </Toast.Body>
-          </Toast>
-        ))}
-        {renderPagination()}
-      </Else>
-    </If>
-
+    <>
+      
+      <If condition={props.error}>
+        <Then>
+          <Alert className = 'bg-danger'>
+            <h2>
+              {props.error}
+            </h2>
+          </Alert>
+        </Then>
+        <Else>
+          {currentPage['list'].map(item => (
+            <Toast key={item._id} onClose={() => props.handleDelete(item._id)} style={{width: '100%',maxWidth: '100%'}} >
+              <Toast.Header closeButton={authenticatedUser.capabilities.includes('delete')}>
+                <strong 
+                  className={`${item.complete? 'bg-success':'bg-danger'} rounded mr-2 text-white p-1`} 
+                  onClick={authenticatedUser.capabilities.includes('update')?
+                    () => props.handleComplete(item._id): null}>
+                  {item.complete? 'Completed' : 'Pending'}
+                </strong>
+                <span className="ml-auto mr-auto h6">{item.assignee}</span>
+              </Toast.Header>
+              <Toast.Body>
+                <span className='mr-auto h5'>{item.item}</span>
+                <small className='float-right'>{`Difficulty: ${item.difficulty}`}</small>
+              </Toast.Body>
+            </Toast>
+          ))}
+          {renderPagination()}
+        </Else>
+      </If>
+    </>
   );
 }
 
@@ -139,4 +146,5 @@ TodoList.propTypes = {
   list: PropTypes.array,
   error: PropTypes.string,
   handleDelete: PropTypes.func,
+  isLoading: PropTypes.bool,
 };

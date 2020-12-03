@@ -1,21 +1,24 @@
-import React, {useState, useEffect} from 'react';
-import TodoForm from './components/todo/form';
-import TodoList from './components/todo/list';
-import Header from './components/header';
+import React, {useState, useEffect, useContext, useCallback} from 'react';
+import TodoForm from './form';
+import TodoList from './list';
 import {Container, Row, Col, Button} from 'react-bootstrap';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import url from './url.js';
 // import useAjax from './hooks/useAjax';
 import axios from 'axios';
-import SettingsModal from './components/todo/settingsModal.js';
+import SettingsModal from './settingsModal.js';
+import {LoginContext} from '../../context/auth/context.js';
+import Auth from '../../context/auth/auth.js';
+import {If, Then, Else} from 'react-if';
+import ReactLoading from 'react-loading';
 
-export default function App (){
+export default function Todo (){
 
   // const [setConfig, response, error] = useAjax();
   const [list, setList] = useState([]);
   const [error, setError] = useState(null);
   const [showSettings, setShowSettings] = useState(false);
-
+  const {authenticatedUser} = useContext(LoginContext);
+  const [isLoading, setIsLoading] = useState(false);
+  const url = process.env.REACT_APP_TODO_URL;
   /**
    * 
    * @param {obj} item take an obj and save to database
@@ -27,6 +30,9 @@ export default function App (){
       data: {
         ...item,
         complete:false,
+      },
+      headers: {
+        Authorization: `Bearer ${authenticatedUser.token}`,
       },
     };
     if (!config.data.difficulty) {
@@ -56,6 +62,9 @@ export default function App (){
         ...item,
         complete:!item.complete,
       },
+      headers: {
+        Authorization: `Bearer ${authenticatedUser.token}`,
+      },
     };
     try {
       await axios(config);
@@ -84,6 +93,9 @@ export default function App (){
     const config = {
       method: 'delete',
       url: `${url}/${id}`,
+      headers: {
+        Authorization: `Bearer ${authenticatedUser.token}`,
+      },
     };
     try {
       await axios(config);
@@ -101,28 +113,39 @@ export default function App (){
   }
 
   
-  async function fetchToDoList (){
+  const fetchToDoList = useCallback(async ()=>{
+    let fetchUrl;
+    setIsLoading(true);
+    if (authenticatedUser.role === 'user'){
+      fetchUrl = url+`/assignee/${authenticatedUser.username}`;
+    } else fetchUrl = url;
     const config = {
       method: 'get',
-      url,
+      url: fetchUrl,
+      headers: {
+        Authorization: `Bearer ${authenticatedUser.token}`,
+      },
     };
     try{
       const {data} = await axios(config);
       setList(data);
       setError(null);
+      setIsLoading(false);
     }
     catch (error){
       setError(error.message);
+      setIsLoading(false);
     }
-  }
+  },[authenticatedUser, url]);
 
   // Runs on app load, modifying items, and change settings. Pulls all the list items from data server
   useEffect( () => {
     const getToDoList =  async () => {
+
       await fetchToDoList();
     };
     getToDoList();
-  }, []);
+  }, [fetchToDoList]);
   
 
   // update title
@@ -138,7 +161,6 @@ export default function App (){
 
   return (
     <>
-      <Header/>
       <Container className = 'p-3'>
         <h2 className = 'text-white bg-dark mt-3 p-3'>
         To Do List Manager ({list.filter(item => !item.complete).length})
@@ -146,16 +168,25 @@ export default function App (){
         </h2>
         <SettingsModal show={showSettings} handleClose={toggleSettings} ></SettingsModal>
         <Row className='font-weight-bold'>
-          <Col lg={4} md={6} sm={12} className = 'p-3'>
-            <TodoForm handleSubmit={addItem} />
-          </Col>
-          <Col lg={8} md={6} sm={12} className = 'p-3'>
-            <TodoList
-              list={list}
-              handleComplete={toggleComplete}
-              handleDelete={deleteItem}
-              error={error}
-            />
+          <Auth capability={'create'}>
+            <Col lg={4} md={6} sm={12} className = 'p-3'>
+              <TodoForm handleSubmit={addItem} />
+            </Col>
+          </Auth>
+          <Col className = 'p-3'>
+            <If condition={isLoading}>
+              <Then>
+                <ReactLoading type={'bars'} color={'grey'} width={150} className='m-auto' />
+              </Then>
+              <Else>
+                <TodoList
+                  list={list}
+                  handleComplete={toggleComplete}
+                  handleDelete={deleteItem}
+                  error={error}
+                />
+              </Else>
+            </If>
           </Col>
         </Row>
       </Container>

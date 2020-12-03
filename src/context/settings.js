@@ -10,7 +10,7 @@ function Settings(props){
     sortOrder: 'ascending',
   };
 
-  const [settings, setSettings] = useState(initSettings);
+  const [settings, setSettings] = useState(localStorage.getItem('ToDoManagerSettingsData') ||initSettings);
 
   return (
     <SettingsContext.Provider value = {{settings, setSettings}}>
