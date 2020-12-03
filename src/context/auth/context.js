@@ -8,11 +8,13 @@ export const LoginContext = React.createContext();
 function LoginProvider(props){
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [authenticatedUser, saveAuthenticatedUser] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
   const signInUrl = process.env.REACT_APP_SIGNIN_URL;
   const signUpURL = process.env.REACT_APP_SIGNUP_URL;
   
 
   const login = async(userInput) =>{
+    setIsLoading(true);
     //connect to auth server
     const config = {
       method: 'post',
@@ -26,15 +28,17 @@ function LoginProvider(props){
       const response = await axios(config);
       const {token} = response.data;
       validateToken(token);
+      setIsLoading(false);
     }catch(e){
       console.warn('Login Attempt Failed');
       logout();
       window.alert('login failed. Please try again');
+      setIsLoading(false);
     }
   };
 
   const signup = async (userData) =>{
-    
+    setIsLoading(true);
     const config = {
       method:'post',
       url: signUpURL,
@@ -45,10 +49,12 @@ function LoginProvider(props){
       const response = await axios(config);
       const {token} = response.data;
       validateToken(token);
+      setIsLoading(false);
     }catch(e){
       console.warn('Register Attempt Failed');
       logout();
       window.alert('Register process failed. Please try again');
+      setIsLoading(false);
     }
 
   };
@@ -85,7 +91,7 @@ function LoginProvider(props){
 
 
   return(
-    <LoginContext.Provider value={{ isLoggedIn, authenticatedUser, login, logout, signup}}>
+    <LoginContext.Provider value={{ isLoggedIn, authenticatedUser, login, logout, signup, isLoading}}>
       {props.children}
     </LoginContext.Provider>
   );
