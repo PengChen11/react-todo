@@ -15,7 +15,7 @@ function SettingsModel (props){
 
     settingsContext.setSettings(newSettingsData);
 
-    localStorage.setItem('ToDoManagerSettingsData', newSettingsData);
+    localStorage.setItem('ToDoManagerSettingsData', JSON.stringify(newSettingsData));
 
     props.handleClose();
   }

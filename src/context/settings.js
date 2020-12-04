@@ -10,7 +10,9 @@ function Settings(props){
     sortOrder: 'ascending',
   };
 
-  const [settings, setSettings] = useState(localStorage.getItem('ToDoManagerSettingsData') ||initSettings);
+  const localSettings = JSON.parse(localStorage.getItem('ToDoManagerSettingsData'));
+
+  const [settings, setSettings] = useState(localSettings ||initSettings);
 
   return (
     <SettingsContext.Provider value = {{settings, setSettings}}>
