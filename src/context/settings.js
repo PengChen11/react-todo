@@ -10,10 +10,16 @@ function Settings(props){
     sortOrder: 'ascending',
   };
 
-  const localSettings = JSON.parse(localStorage.getItem('ToDoManagerSettingsData'));
+  let localSettings;
+  try {
+    localSettings = JSON.parse(localStorage.getItem('ToDoManagerSettingsData'));
 
+  } catch (e){
+    localStorage.removeItem('ToDoManagerSettingsData');
+    console.warn('Local settings data corrupted');
+  }
   const [settings, setSettings] = useState(localSettings ||initSettings);
-
+  
   return (
     <SettingsContext.Provider value = {{settings, setSettings}}>
       {props.children}
