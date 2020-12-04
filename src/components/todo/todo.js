@@ -35,9 +35,8 @@ export default function Todo (){
         Authorization: `Bearer ${authenticatedUser.token}`,
       },
     };
-    if (!config.data.difficulty) {
-      config.data.difficulty=1;
-    }
+    (!config.data.difficulty) && (config.data.difficulty=1);
+
     try {
       await axios(config);
       await fetchToDoList();
@@ -114,11 +113,10 @@ export default function Todo (){
 
   
   const fetchToDoList = useCallback(async ()=>{
-    let fetchUrl;
     setIsLoading(true);
-    if (authenticatedUser.role === 'user'){
-      fetchUrl = url+`/assignee/${authenticatedUser.username}`;
-    } else fetchUrl = url;
+    let fetchUrl = url;
+    (authenticatedUser.role === 'user') && (fetchUrl = url+`/assignee/${authenticatedUser.username}`);
+
     const config = {
       method: 'get',
       url: fetchUrl,
@@ -142,7 +140,7 @@ export default function Todo (){
   // Runs on app load, modifying items, and change settings. Pulls all the list items from data server
   useEffect( () => {
     const getToDoList =  async () => {
-      if (Object.keys(authenticatedUser).length !== 0 ) await fetchToDoList();
+      (Object.keys(authenticatedUser).length !== 0 ) && await fetchToDoList();
     };
     getToDoList();
   }, [fetchToDoList, authenticatedUser]);
