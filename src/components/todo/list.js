@@ -1,4 +1,4 @@
-import React, {useState, useContext, useEffect, useCallback} from 'react';
+import React, {useState, useContext} from 'react';
 import PropTypes from 'prop-types';
 import {Alert, Toast, Pagination} from 'react-bootstrap';
 import {If, Then, Else} from 'react-if';
@@ -7,54 +7,24 @@ import {LoginContext} from '../../context/auth/context.js';
 
 
 export default function TodoList (props){
-
+  
   const settingsContext = useContext(SettingsContext);
-  const [pages, setPages] = useState({page1:[]});
-  const [currentPage, setCurrentPage] = useState({pageNum:1,list:[] });
+  const {showCompleted, maxNum, sort, sortOrder} = settingsContext.settings;
+  // just tracking the page number, when changes, re-render content
+  const [page, setPage] = useState(0);
+  //this is the modified list based on user's setting about whether to show completed items or not. This is the only thing that modifys the items in the list
+  const readyList = props.list.filter(item => showCompleted? true : !item.complete);
+  
+  //determin the starting and ending point for each page
+  const start = maxNum * page || 0;
+  const end = start + maxNum || readyList.length;
+  // init a pages array for later use with Pagination, will contains page numbers
+  const pages = new Array(Math.ceil(readyList.length / maxNum)).fill('');
+  // this will be the page of items to be displayed.
+  const displayPage = readyList ? readyList.slice(start, end) : [];
+  displayPage.sort(sortList(sort, sortOrder));
+
   const {authenticatedUser} = useContext(LoginContext);
-
-  /**
-   * 
-   * @param {array} listArr apply all settings to the given list array
-   */
-  const applySettings = useCallback ((listArr)=>{
-    let displayList=[];
-    const {showCompleted, maxNum, sort, sortOrder} = settingsContext.settings;
-
-    //apply the show completed item ssetting.
-    if (showCompleted===false){
-      displayList = listArr.filter(item => item.complete===false);
-    } else displayList = listArr;
-
-    //apply the sort and sort order setting
-    displayList.sort(sortList(sort, sortOrder));
-
-    //apply how many items per page settings and create the pages sys
-    if (maxNum < displayList.length) {
-      let totalNumOfPages = Math.ceil(displayList.length / maxNum);
-      let buildingPages = {};
-
-      for (let i = 0; i<totalNumOfPages; i++){
-        let listsForEachPage = displayList.slice(i*maxNum,i*maxNum+maxNum);
-        buildingPages[`page${i+1}`]=listsForEachPage;
-      }
-      setPages(buildingPages);
-
-    } else {
-      setPages({page1: displayList});
-    }
-
-  },[settingsContext]);
-
-  // apply all settings whenever given list got changed, or settings are changed.
-  useEffect(()=>{
-    applySettings(props.list);
-  },[props.list, applySettings]);
-
-  //initialize the pages to show page1 as current page, whenever the whole pages sys get changed.
-  useEffect(()=>{
-    setCurrentPage({ pageNum: 1, list: pages.page1});
-  },[pages]);
 
 
   /**
@@ -79,35 +49,8 @@ export default function TodoList (props){
     };
   }
 
- 
-  function changePage(number){
-    setCurrentPage({pageNum:number, list:pages[`page${number}`]});
-  }
-
-  function renderPagination(activePage=1){
-    let items = [];
-    const len = Object.keys(pages).length;
-    for (let number = 1; number <= len ; number++) {
-      items.push(
-        <Pagination.Item 
-          key={number} 
-          active={number === currentPage.pageNum}
-          onClick={()=>changePage(number)}
-        >
-          {number}
-        </Pagination.Item>,
-      );
-    }
-    
-    return (
-      <Pagination >{items}</Pagination>
-    );
-  }
-
-
   return (
     <>
-      
       <If condition={props.error}>
         <Then>
           <Alert className = 'bg-danger'>
@@ -117,7 +60,7 @@ export default function TodoList (props){
           </Alert>
         </Then>
         <Else>
-          {currentPage['list'].map(item => (
+          {displayPage.map(item => (
             <Toast key={item._id} onClose={() => props.handleDelete(item._id)} style={{width: '100%',maxWidth: '100%'}} >
               <Toast.Header closeButton={authenticatedUser.capabilities.includes('delete')}>
                 <strong 
@@ -134,7 +77,17 @@ export default function TodoList (props){
               </Toast.Body>
             </Toast>
           ))}
-          {renderPagination()}
+          <Pagination>
+            {
+              pages.map( (n, i)=>
+                <Pagination.Item
+                  key = {i+1}
+                  active = {i === page}
+                  onClick={()=>setPage(i)}
+                >{i+1}</Pagination.Item>
+              )
+            }
+          </Pagination>
         </Else>
       </If>
     </>
