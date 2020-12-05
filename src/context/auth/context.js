@@ -85,7 +85,7 @@ function LoginProvider(props){
 
   useEffect(()=>{
     const token = cookie.load('auth') || null;
-    if (token) validateToken(token);
+    (!!token) && validateToken(token);
   },[validateToken]);
 
 
